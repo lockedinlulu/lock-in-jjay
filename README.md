@@ -21,22 +21,25 @@ Course Tags — Filter students by course code (CSCI 272, MTH 241, etc.) to find
 
 ## OOP Structure
 The app is organized around four core classes:
-### Student — holds name, major, year, bio, courses, vibe, availability, LinkedIn, XP, and streak data.
-### VibeProfile — an enum-style object defining the four study styles and a compatibility scoring matrix between each combination.
-### MatchEngine — takes two Student objects and returns a compatibility score using weighted signals across courses, vibe, and availability. Also handles sorting the browse feed.
-### StudySession — manages the timer state, calculates duration on end, awards XP to the current user, and logs session history.
+Student — holds name, major, year, bio, courses, vibe, availability, LinkedIn, XP, and streak data.
 
-How to run it
+VibeProfile — an enum-style object defining the four study styles and a compatibility scoring matrix between each combination.
+
+MatchEngine — takes two Student objects and returns a compatibility score using weighted signals across courses, vibe, and availability. Also handles sorting the browse feed.
+
+StudySession — manages the timer state, calculates duration on end, awards XP to the current user, and logs session history.
+
+### How to run it
 This is a fully client-side app — no server, no install, no dependencies.
 
-Download or clone this repo
+### Download or clone this repo
 Open studysync.html in any modern browser (Chrome recommended)
 That's it
 
-Tech stack
+### Tech stack
 Pure HTML, CSS, and vanilla JavaScript. No frameworks, no build tools, no backend. All state lives in memory during the session; streaks and XP persist via localStorage.
 
-##Future improvements
+### Future improvements
 Firebase backend for persistent data and real-time DMs
 Email login tied to a john.jay.cuny.edu address for verified student profiles
 Push notifications for streak reminders
