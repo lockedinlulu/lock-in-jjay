@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StudySync JJ</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#002d72;--navy-dark:#001a45;--navy-mid:#1a4a9e;
+  --blue:#4a90d9;--blue-light:#c8dcf5;--blue-xlight:#e8f2fc;
+  --white:#fff;--offwhite:#f5f8fe;--text:#0d1b2e;--muted:#4a6080;
+  --border:#ccdcef;--card:#fff;--bg:#eef4fc;
+  --green:#1a7a4a;--green-bg:#e6f5ed;
+  --amber:#b86a00;--amber-bg:#fff3dc;
+  --red:#c0392b;--red-bg:#fdecea;
+  --radius:14px;--radius-sm:9px;
+  --shadow:0 4px 20px rgba(0,45,114,0.10);
+}
+body.dark{
+  --navy:#4a7fd4;--navy-dark:#1a3a6e;--navy-mid:#6a9fe8;
+  --blue:#78aff5;--blue-light:#1e3a5f;--blue-xlight:#0e2040;
+  --white:#111c2e;--offwhite:#0c1626;--text:#e8f0fb;--muted:#8aabcc;
+  --border:#1e3a5f;--card:#132238;--bg:#08111f;
+  --green-bg:#0e2a18;--amber-bg:#221800;--red-bg:#2a0e0e;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+a{color:var(--navy);text-decoration:none}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+nav{background:var(--navy-dark);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.18)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:#fff}
+.nav-logo span{color:#78b3f5}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-btn{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;transition:all .15s}
+.nav-btn.ghost{background:rgba(255,255,255,0.10);color:#fff}
+.nav-btn.ghost:hover{background:rgba(255,255,255,0.18)}
+.nav-btn.primary{background:#4a90d9;color:#fff}
+.nav-btn.primary:hover{background:#357abd}
+.nav-btn.active{background:rgba(255,255,255,0.22);color:#fff}
+.notif-dot{display:inline-block;width:7px;height:7px;background:#e74c3c;border-radius:50%;margin-left:4px;vertical-align:middle}
+
+.page{display:none;min-height:calc(100vh - 56px)}
+.page.active{display:block}
+
+/* ── HERO ── */
+.hero{max-width:680px;margin:0 auto;padding:4.5rem 1.5rem 2.5rem;text-align:center}
+.hero h1{font-family:'DM Serif Display',serif;font-size:46px;line-height:1.1;margin-bottom:.8rem;color:var(--text)}
+.hero h1 em{font-style:normal;color:var(--navy)}
+.hero p{font-size:17px;color:var(--muted);max-width:440px;margin:0 auto 1.8rem;line-height:1.6}
+.hero-btn{display:inline-block;padding:12px 32px;background:var(--navy-dark);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;box-shadow:var(--shadow);transition:all .15s}
+body.dark .hero-btn{background:var(--navy)}
+.hero-btn:hover{transform:translateY(-1px);background:var(--navy-mid)}
+.hero-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+.pill{padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted)}
+
+/* ── BROWSE ── */
+.section{max-width:960px;margin:0 auto;padding:1.5rem}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:10px}
+.section-title{font-size:19px;font-weight:700}
+.students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.student-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .15s;position:relative;box-shadow:0 2px 10px rgba(0,45,114,0.05)}
+.student-card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-2px)}
+.card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:.8rem}
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.card-name{font-weight:700;font-size:14px;margin-bottom:1px}
+.card-meta{font-size:11px;color:var(--muted)}
+.card-bio{font-size:12px;color:var(--muted);margin-bottom:.6rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.6rem}
+.tag{padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700}
+.tag.course{background:var(--blue-xlight);color:var(--navy)}
+.tag.vibe{background:var(--blue-light);color:var(--navy)}
+body.dark .tag.course{color:#78aff5}
+body.dark .tag.vibe{color:#78aff5}
+.match-score{position:absolute;top:10px;right:10px;background:var(--navy-dark);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+body.dark .match-score{background:var(--navy)}
+.compat-bar-wrap{margin:4px 0 2px}
+.compat-bar{height:5px;background:var(--blue-xlight);border-radius:999px;overflow:hidden}
+.compat-fill{height:100%;background:var(--navy);border-radius:999px}
+body.dark .compat-fill{background:var(--blue)}
+.compat-label{font-size:10px;color:var(--muted);display:flex;justify-content:space-between;margin-top:2px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.filter-chip{padding:5px 11px;border:1px solid var(--border);border-radius:999px;font-size:11px;cursor:pointer;background:var(--card);color:var(--text)}
+.filter-chip.active{background:var(--navy-dark);color:#fff;border-color:var(--navy-dark)}
+body.dark .filter-chip.active{background:var(--navy)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(5,15,35,.5);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);max-width:540px;width:100%;max-height:90vh;overflow-y:auto;padding:1.8rem;position:relative;box-shadow:var(--shadow)}
+.modal-close{position:absolute;top:.9rem;right:.9rem;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal h2{font-size:19px;font-weight:800;margin-bottom:1.2rem}
+.form-group{margin-bottom:.9rem}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text)}
+input[type=text],input[type=url],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--white);transition:border .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy)}
+textarea{resize:none;height:66px}
+.pfp-row{display:flex;align-items:center;gap:12px;margin-bottom:.9rem}
+.pfp-preview{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.pfp-btn{padding:7px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--offwhite);color:var(--text);font-size:12px;font-weight:700}
+.pfp-btn:hover{background:var(--blue-xlight)}
+.color-row{display:flex;gap:6px;margin-top:5px}
+.color-swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;transition:transform .1s;border:2px solid transparent}
+.color-swatch.selected,.color-swatch:hover{transform:scale(1.25);outline:2px solid var(--navy)}
+.course-input-row{display:flex;gap:7px}
+.course-input-row input{flex:1}
+.add-btn{padding:9px 12px;background:var(--navy-dark);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;white-space:nowrap}
+body.dark .add-btn{background:var(--navy)}
+.add-btn:hover{background:var(--navy-mid)}
+.tags-container{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;min-height:26px}
+.removable-tag{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;background:var(--blue-xlight);color:var(--navy);border-radius:999px;font-size:11px;font-weight:700}
+.removable-tag button{background:none;border:none;color:var(--navy);cursor:pointer;font-size:13px;line-height:1;padding:0}
+.quick-add-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.quick-chip{font-size:11px;color:var(--navy);cursor:pointer;padding:3px 8px;border:1px solid var(--blue);border-radius:999px;background:var(--blue-xlight);font-weight:700}
+.quick-chip:hover{background:var(--blue-light)}
+.vibe-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.vibe-opt{border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem;cursor:pointer;transition:all .12s;background:var(--white)}
+.vibe-opt:hover{border-color:var(--blue);background:var(--blue-xlight)}
+.vibe-opt.selected{border:2px solid var(--navy);background:var(--blue-xlight)}
+.vibe-opt .vt{font-size:12px;font-weight:800;margin-bottom:1px}
+.vibe-opt .vd{font-size:10px;color:var(--muted)}
+.avail-grid{display:grid;grid-template-columns:auto repeat(5,1fr);gap:3px}
+.avail-cell{text-align:center;font-size:10px;padding:5px 2px;border-radius:6px;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:var(--white);transition:all .1s;user-select:none}
+.avail-cell:hover{border-color:var(--blue)}
+.avail-cell.on{background:var(--navy-dark);border-color:var(--navy-dark);color:#fff}
+body.dark .avail-cell.on{background:var(--navy)}
+.avail-cell.header{background:var(--blue-xlight);cursor:default;font-weight:800;border-color:transparent;color:var(--navy)}
+.save-btn{width:100%;padding:11px;background:var(--navy-dark);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:800;margin-top:.4rem;transition:all .15s}
+body.dark .save-btn{background:var(--navy)}
+.save-btn:hover{background:var(--navy-mid);transform:translateY(-1px)}
+#form-error{font-size:12px;color:var(--red);margin-bottom:7px;display:none}
+
+/* ── CHAT ── */
+.chat-layout{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 56px);max-width:100%;overflow:hidden}
+.chat-sidebar{background:var(--card);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.chat-sidebar-header{padding:.9rem 1rem;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between}
+.chat-contact{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+.chat-contact:hover,.chat-contact.active{background:var(--blue-xlight)}
+.chat-contact-name{font-weight:600;font-size:13px}
+.chat-contact-preview{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.unread-badge{background:var(--navy-dark);color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;margin-left:auto;flex-shrink:0}
+body.dark .unread-badge{background:var(--navy)}
+.chat-main{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.chat-header{padding:.8rem 1.2rem;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--card)}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem}
+.chat-bubble-wrap{display:flex;flex-direction:column}
+.chat-bubble-wrap.me{align-items:flex-end}
+.chat-bubble{max-width:68%;padding:.55rem .9rem;border-radius:14px;font-size:13px;line-height:1.5}
+.chat-bubble.them{background:var(--offwhite);border:1px solid var(--border);border-radius:14px 14px 14px 4px;color:var(--text)}
+.chat-bubble.me{background:var(--navy-dark);color:#fff;border-radius:14px 14px 4px 14px}
+body.dark .chat-bubble.me{background:var(--navy)}
+.chat-bubble-time{font-size:10px;color:var(--muted);margin-top:2px}
+.chat-input-row{display:flex;gap:8px;padding:.8rem 1.2rem;border-top:1px solid var(--border);flex-shrink:0;background:var(--card)}
+.chat-input-row input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--white)}
+.chat-input-row input:focus{outline:none;border-color:var(--navy)}
+.send-btn{padding:9px 16px;background:var(--navy-dark);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:13px}
+body.dark .send-btn{background:var(--navy)}
+.send-btn:hover{background:var(--navy-mid)}
+.no-chat-selected{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:14px;gap:.5rem}
+.chat-empty-icon{font-size:40px;margin-bottom:.5rem}
+
+/* ── TIMER ── */
+.timer-page{max-width:640px;margin:0 auto;padding:2rem 1.5rem}
+.timer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;box-shadow:var(--shadow);margin-bottom:1.2rem}
+.timer-display{font-size:72px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy-dark);letter-spacing:2px;margin:.5rem 0}
+body.dark .timer-display{color:var(--blue)}
+.timer-label{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.2rem}
+.timer-btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.timer-btn{padding:10px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;border:none;transition:all .15s}
+.timer-btn.start{background:var(--navy-dark);color:#fff}
+body.dark .timer-btn.start{background:var(--navy)}
+.timer-btn.start:hover{background:var(--navy-mid)}
+.timer-btn.reset{background:var(--offwhite);color:var(--text);border:1px solid var(--border)}
+.timer-btn.reset:hover{background:var(--blue-xlight)}
+.timer-mode-row{display:flex;gap:8px;justify-content:center;margin-bottom:1.2rem;flex-wrap:wrap}
+.timer-mode-btn{padding:6px 15px;border:1px solid var(--border);border-radius:999px;font-size:12px;font-weight:700;background:var(--card);color:var(--muted);transition:all .15s}
+.timer-mode-btn.active{background:var(--navy-dark);color:#fff;border-color:var(--navy-dark)}
+body.dark .timer-mode-btn.active{background:var(--navy);border-color:var(--navy)}
+.timer-progress-bar{height:6px;background:var(--blue-xlight);border-radius:999px;overflow:hidden;margin:.8rem 0}
+.timer-progress-fill{height:100%;background:var(--navy);border-radius:999px;transition:width .5s linear}
+body.dark .timer-progress-fill{background:var(--blue)}
+.timer-sessions-row{display:flex;gap:6px;justify-content:center;margin-top:.6rem}
+.session-dot{width:10px;height:10px;border-radius:50%;background:var(--border)}
+.session-dot.done{background:var(--navy)}
+body.dark .session-dot.done{background:var(--blue)}
+.xp-toast{position:fixed;bottom:24px;right:24px;background:var(--navy-dark);color:#fff;padding:.7rem 1.2rem;border-radius:var(--radius-sm);font-size:13px;font-weight:700;box-shadow:var(--shadow);z-index:300;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── LEADERBOARD ── */
+.leaderboard-page{max-width:640px;margin:0 auto;padding:1.5rem}
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.lb-header{background:var(--navy-dark);color:#fff;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+body.dark .lb-header{background:var(--navy-dark)}
+.lb-header-title{font-size:16px;font-weight:800}
+.lb-header-sub{font-size:11px;opacity:.7}
+.lb-row{display:flex;align-items:center;gap:12px;padding:.75rem 1.2rem;border-bottom:1px solid var(--border);transition:background .1s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--blue-xlight)}
+.lb-rank{font-size:16px;font-weight:800;width:28px;text-align:center;flex-shrink:0}
+.lb-rank.gold{color:#c8a800}
+.lb-rank.silver{color:#8a9bb0}
+.lb-rank.bronze{color:#a0613a}
+.lb-name{flex:1;font-weight:600;font-size:13px}
+.lb-meta{font-size:11px;color:var(--muted)}
+.lb-xp{font-weight:800;font-size:14px;color:var(--navy)}
+body.dark .lb-xp{color:var(--blue)}
+.lb-streak{font-size:11px;color:var(--amber);font-weight:700}
+.lb-you{background:var(--blue-xlight);border-left:3px solid var(--navy)}
+body.dark .lb-you{border-left-color:var(--blue)}
+
+/* ── MY PROFILE ── */
+.profile-page{max-width:680px;margin:0 auto;padding:1.5rem}
+.profile-hero{background:var(--navy-dark);border-radius:var(--radius);padding:1.8rem;color:#fff;display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem;position:relative;overflow:hidden}
+body.dark .profile-hero{background:linear-gradient(135deg,#0e2040,#1a3a6e)}
+.profile-hero-avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;flex-shrink:0;overflow:hidden}
+.profile-hero-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.profile-hero-name{font-size:22px;font-weight:800;margin-bottom:2px}
+.profile-hero-meta{font-size:13px;opacity:.75;margin-bottom:.6rem}
+.xp-bar-wrap{background:rgba(255,255,255,.2);border-radius:999px;height:6px;overflow:hidden;width:200px}
+.xp-bar-fill{height:100%;background:#78b3f5;border-radius:999px}
+.xp-label{font-size:11px;opacity:.7;margin-top:3px}
+.level-badge{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.3rem .8rem;font-size:12px;font-weight:800;color:#fff}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem;text-align:center;box-shadow:0 2px 8px rgba(0,45,114,0.05)}
+.stat-val{font-size:22px;font-weight:800;color:var(--navy)}
+body.dark .stat-val{color:var(--blue)}
+.stat-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.streak-row{display:flex;gap:6px;margin:1rem 0}
+.streak-day{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--blue-xlight);color:var(--muted)}
+.streak-day.done{background:var(--navy-dark);color:#fff}
+body.dark .streak-day.done{background:var(--navy)}
+.streak-day.today{outline:2px solid var(--blue);outline-offset:2px}
+.profile-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:1rem}
+.profile-section-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.8rem}
+.edit-btn-sm{padding:5px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--offwhite);color:var(--text);font-size:11px;font-weight:700}
+.edit-btn-sm:hover{background:var(--blue-xlight)}
+.badge-grid{display:flex;gap:8px;flex-wrap:wrap}
+.badge{padding:.4rem .8rem;border-radius:999px;font-size:11px;font-weight:700;border:1px solid}
+.badge.earned{background:var(--blue-xlight);color:var(--navy);border-color:var(--blue)}
+.badge.locked{background:var(--offwhite);color:var(--muted);border-color:var(--border)}
+body.dark .badge.earned{color:#78aff5}
+
+/* ── dark mode inputs ── */
+body.dark input[type=text],body.dark input[type=url],body.dark select,body.dark textarea,body.dark .chat-input-row input{background:#0e1f36;color:var(--text);border-color:var(--border)}
+body.dark .vibe-opt{background:#0e1f36;border-color:var(--border)}
+body.dark .avail-cell{background:#0e1f36;border-color:var(--border);color:var(--muted)}
+body.dark .avail-cell.header{background:#0e2040;color:#78aff5}
+@media(max-width:640px){
+  .chat-layout{grid-template-columns:1fr}
+  .chat-sidebar{display:none}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Study<span>Sync</span> JJ</div>
+  <div class="nav-links">
+    <button class="nav-btn ghost" id="nb-home" onclick="showPage('home')">Home</button>
+    <button class="nav-btn ghost" id="nb-browse" onclick="showPage('browse')">Browse</button>
+    <button class="nav-btn ghost" id="nb-chat" onclick="showPage('chat')">Messages<span class="notif-dot" id="msg-dot" style="display:none"></span></button>
+    <button class="nav-btn ghost" id="nb-timer" onclick="showPage('timer')">Timer</button>
+    <button class="nav-btn ghost" id="nb-lb" onclick="showPage('leaderboard')">Leaderboard</button>
+    <button class="nav-btn ghost" id="nb-profile" onclick="showPage('profile')">My Profile</button>
+    <button class="nav-btn primary" id="nb-join" onclick="openSignup()">Join</button>
+    <button class="nav-btn ghost" onclick="toggleDark()" id="dark-btn">🌙</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Find your<br/><em>study squad</em><br/>at John Jay</h1>
+    <p>Match with classmates who share your courses, schedule, and study vibe.</p>
+    <button class="hero-btn" onclick="openSignup()">Create your profile</button>
+    <div class="hero-pills">
+      <span class="pill">📚 Course matching</span>
+      <span class="pill">🕐 Availability sync</span>
+      <span class="pill">✨ Vibe check</span>
+      <span class="pill">💬 Direct messages</span>
+      <span class="pill">⏱ Study timer</span>
+      <span class="pill">🏆 Leaderboard</span>
+    </div>
+  </div>
+</div>
+
+<!-- BROWSE -->
+<div id="page-browse" class="page">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Students</div>
+        <div id="browse-subtitle" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+      </div>
+      <button class="nav-btn primary" onclick="openSignup()">+ Join</button>
+    </div>
+    <div class="filter-row" id="filter-row"></div>
+    <div class="students-grid" id="students-grid"></div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="page-chat" class="page">
+  <div class="chat-layout">
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-header">Messages
+        <span style="font-size:11px;color:var(--muted);font-weight:400" id="chat-online">5 online</span>
+      </div>
+      <div id="chat-contacts"></div>
+    </div>
+    <div class="chat-main" id="chat-main">
+      <div class="no-chat-selected">
+        <div class="chat-empty-icon">💬</div>
+        <div>Select a conversation</div>
+        <div style="font-size:12px">to start messaging your study squad</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div id="page-timer" class="page">
+  <div class="timer-page">
+    <div class="section-header" style="margin-bottom:1rem">
+      <div class="section-title">Study Timer</div>
+      <div style="font-size:12px;color:var(--muted)" id="timer-xp-today">Today: <strong>0 XP</strong> earned</div>
+    </div>
+    <div class="timer-mode-row">
+      <button class="timer-mode-btn active" onclick="setMode('pomodoro',this)">Pomodoro 25</button>
+      <button class="timer-mode-btn" onclick="setMode('short',this)">Short Break 5</button>
+      <button class="timer-mode-btn" onclick="setMode('long',this)">Long Break 15</button>
+      <button class="timer-mode-btn" onclick="setMode('custom',this)">Custom</button>
+    </div>
+    <div class="timer-card">
+      <div class="timer-label" id="timer-label">Focus Session</div>
+      <div class="timer-display" id="timer-display">25:00</div>
+      <div class="timer-progress-bar"><div class="timer-progress-fill" id="timer-fill" style="width:100%"></div></div>
+      <div class="timer-sessions-row" id="timer-dots"></div>
+      <div class="timer-btn-row" style="margin-top:1.2rem">
+        <button class="timer-btn start" id="timer-toggle" onclick="toggleTimer()">▶ Start</button>
+        <button class="timer-btn reset" onclick="resetTimer()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Today's sessions</div>
+      <div id="session-log" style="font-size:13px;color:var(--muted);min-height:32px">No sessions yet — start your first Pomodoro!</div>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="page-leaderboard" class="page">
+  <div class="leaderboard-page">
+    <div class="section-header" style="margin-bottom:1rem">
+      <div class="section-title">Weekly Leaderboard</div>
+      <div style="font-size:12px;color:var(--muted)">Resets every Monday</div>
+    </div>
+    <div class="lb-card" id="lb-table"></div>
+  </div>
+</div>
+
+<!-- MY PROFILE -->
+<div id="page-profile" class="page">
+  <div class="profile-page">
+    <div id="profile-content">
+      <div style="text-align:center;padding:3rem;color:var(--muted)">
+        <div style="font-size:36px;margin-bottom:.5rem">👋</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:.5rem">You haven't joined yet</div>
+        <button class="hero-btn" onclick="openSignup()" style="font-size:13px;padding:10px 24px">Create your profile</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-overlay" id="modal-signup">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-signup')">×</button>
+    <h2>Create your profile</h2>
+    <div class="form-group">
+      <label>Profile photo</label>
+      <div class="pfp-row">
+        <img id="pfp-preview" class="pfp-preview" src="" style="display:none"/>
+        <div id="pfp-initials" style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;background:#002d72;color:#fff;flex-shrink:0">?</div>
+        <div>
+          <button class="pfp-btn" onclick="document.getElementById('pfp-input').click()">Upload photo</button>
+          <input type="file" id="pfp-input" accept="image/*" style="display:none" onchange="handlePfp(this)"/>
+          <div class="color-row" id="color-row">
+            <div class="color-swatch selected" data-color="#002d72" style="background:#002d72" onclick="pickColor(this)"></div>
+            <div class="color-swatch" data-color="#1a4a9e" style="background:#1a4a9e" onclick="pickColor(this)"></div>
+            <div class="color-swatch" data-color="#4a90d9" style="background:#4a90d9" onclick="pickColor(this)"></div>
+            <div class="color-swatch" data-color="#d4537e" style="background:#d4537e" onclick="pickColor(this)"></div>
+            <div class="color-swatch" data-color="#7F77DD" style="background:#7F77DD" onclick="pickColor(this)"></div>
+            <div class="color-swatch" data-color="#D85A30" style="background:#D85A30" onclick="pickColor(this)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group"><label>Full name *</label><input type="text" id="f-name" placeholder="e.g. Jordan Smith" oninput="updateInitials()"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="form-group"><label>Major *</label><input type="text" id="f-major" placeholder="e.g. Computer Science"/></div>
+      <div class="form-group"><label>Year</label><select id="f-year"><option value="">Select year</option><option>Freshman</option><option>Sophomore</option><option>Junior</option><option>Senior</option></select></div>
+    </div>
+    <div class="form-group"><label>Bio <span style="color:var(--muted);font-weight:400">(optional)</span></label><textarea id="f-bio" placeholder="Quick intro — what are you working on?"></textarea></div>
+    <div class="form-group"><label>LinkedIn URL <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/yourname"/></div>
+    <div class="form-group">
+      <label>Current courses *</label>
+      <div class="course-input-row">
+        <input type="text" id="f-course-input" placeholder="e.g. CSCI 272" onkeydown="if(event.key==='Enter')addCourse()"/>
+        <button class="add-btn" onclick="addCourse()">+ Add</button>
+      </div>
+      <div class="quick-add-row">
+        <span style="font-size:10px;color:var(--muted);padding:3px 0">Quick:</span>
+        <span class="quick-chip" onclick="quickCourse('CSCI 271')">CSCI 271</span>
+        <span class="quick-chip" onclick="quickCourse('CSCI 272')">CSCI 272</span>
+        <span class="quick-chip" onclick="quickCourse('MTH 241')">MTH 241</span>
+        <span class="quick-chip" onclick="quickCourse('ENG 101')">ENG 101</span>
+        <span class="quick-chip" onclick="quickCourse('POL 101')">POL 101</span>
+        <span class="quick-chip" onclick="quickCourse('CRJ 101')">CRJ 101</span>
+      </div>
+      <div class="tags-container" id="course-tags"></div>
+    </div>
+    <div class="form-group">
+      <label>Study vibe *</label>
+      <div class="vibe-grid">
+        <div class="vibe-opt" onclick="pickVibe(this,'silent')"><div class="vt">🎧 Silent grinder</div><div class="vd">Head down, no distractions</div></div>
+        <div class="vibe-opt" onclick="pickVibe(this,'explainer')"><div class="vt">📝 Explainer</div><div class="vd">Thinks out loud, loves teaching</div></div>
+        <div class="vibe-opt" onclick="pickVibe(this,'casual')"><div class="vt">☕ Casual collaborator</div><div class="vd">Chill, takes breaks, good energy</div></div>
+        <div class="vibe-opt" onclick="pickVibe(this,'crunch')"><div class="vt">⚡ Crunch mode</div><div class="vd">Last minute, high intensity</div></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>When are you usually free?</label>
+      <div class="avail-grid" id="avail-grid"></div>
+    </div>
+    <div id="form-error"></div>
+    <button class="save-btn" onclick="submitProfile()">Find my study squad →</button>
+  </div>
+</div>
+
+<!-- PROFILE MODAL (view others) -->
+<div class="modal-overlay" id="modal-profile-view">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-profile-view')">×</button>
+    <div id="profile-detail-content"></div>
+  </div>
+</div>
+
+<script>
+/* =============================================
+   OOP CLASSES (core application model)
+   ============================================= */
+
+class VibeProfile {
+  constructor(type) {
+    this.type = type;
+    this.vibes = {
+      silent:   { label:'Silent grinder',      emoji:'🎧' },
+      explainer:{ label:'Explainer',            emoji:'📝' },
+      casual:   { label:'Casual collaborator',  emoji:'☕' },
+      crunch:   { label:'Crunch mode',          emoji:'⚡' }
+    };
+    this.compat = {
+      silent:   {silent:100,explainer:60,casual:40,crunch:30},
+      explainer:{silent:60,explainer:100,casual:85,crunch:55},
+      casual:   {silent:40,explainer:85,casual:100,crunch:45},
+      crunch:   {silent:30,explainer:55,casual:45,crunch:100}
+    };
+  }
+  getLabel(){ return this.vibes[this.type]?.label || this.type }
+  getEmoji(){ return this.vibes[this.type]?.emoji || '' }
+  getCompatibility(other){ return this.compat[this.type]?.[other.type] || 50 }
+}
+
+class Course {
+  constructor(code){ this.code = code.trim().toUpperCase() }
+}
+
+class XPSystem {
+  constructor(){ this.xp=0; this.level=1; this.sessionXP=0 }
+  addXP(amount){
+    this.xp += amount;
+    this.sessionXP += amount;
+    this.level = Math.floor(this.xp / 200) + 1;
+  }
+  getLevelLabel(){
+    const labels = ['',  'Freshman','Sophomore','Study Pro','Dean\'s List','Valedictorian'];
+    return labels[Math.min(this.level, labels.length-1)] || 'Legend';
+  }
+  getProgress(){ return ((this.xp % 200) / 200) * 100 }
+  getNextXP(){ return 200 - (this.xp % 200) }
+}
+
+class Student {
+  constructor(id, name, major, year, bio, courses, vibe, color, pfp, linkedin, avail){
+    this.id = id;
+    this.name = name;
+    this.major = major;
+    this.year = year;
+    this.bio = bio;
+    this.courses = courses.map(c => new Course(c));
+    this.vibeProfile = new VibeProfile(vibe);
+    this.color = color;
+    this.pfp = pfp;
+    this.linkedin = linkedin;
+    this.avail = avail;
+    this.xp = Math.floor(Math.random()*600)+50;
+    this.streak = Math.floor(Math.random()*12)+1;
+  }
+  getCourseCodes(){ return this.courses.map(c=>c.code) }
+  getInitials(){
+    return this.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()
+  }
+  getFirstName(){ return this.name.split(' ')[0] }
+  getSharedCourses(other){
+    return this.getCourseCodes().filter(c=>other.getCourseCodes().includes(c))
+  }
+  getSharedAvailability(other){
+    return this.avail.filter(s=>other.avail.includes(s))
+  }
+}
+
+class MatchResult {
+  constructor(student, score, sharedCourses, sharedAvail){
+    this.student=student; this.score=score;
+    this.sharedCourses=sharedCourses; this.sharedAvail=sharedAvail;
+  }
+}
+
+class MatchEngine {
+  static calculateMatch(a, b){
+    const sc = a.getSharedCourses(b);
+    const sa = a.getSharedAvailability(b);
+    const courseScore = Math.min(100, sc.length*33);
+    const vibeScore = a.vibeProfile.getCompatibility(b.vibeProfile);
+    const availScore = Math.min(100, sa.length*25);
+    const final = Math.round(courseScore*.45 + vibeScore*.35 + availScore*.20);
+    return new MatchResult(b, final, sc, sa);
+  }
+  static rankMatches(user, all){
+    return all.filter(s=>s.id!==user.id)
+      .map(s=>this.calculateMatch(user,s))
+      .sort((a,b)=>b.score-a.score);
+  }
+}
+
+/* ── Message class ── */
+class Message {
+  constructor(fromId, toId, text, ts=null){
+    this.fromId=fromId; this.toId=toId; this.text=text;
+    this.ts = ts || new Date();
+  }
+  formatTime(){
+    return this.ts.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  }
+}
+
+/* ── TimerSession class ── */
+class TimerSession {
+  constructor(mode, minutes){
+    this.mode=mode; this.minutes=minutes;
+    this.startedAt=new Date(); this.completed=false;
+  }
+  markComplete(){ this.completed=true }
+  getXP(){ return this.mode==='pomodoro'?50: this.mode==='short'?10:20 }
+  label(){
+    const h=this.startedAt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return `${h} — ${this.minutes}min ${this.mode}`;
+  }
+}
+
+/* ── AppState ── */
+class AppState {
+  constructor(){
+    this.students=[];
+    this.currentUser=null;
+    this.xpSystem=new XPSystem();
+    this.messages={}; // key: "fromId-toId"
+    this.sessions=[]; // TimerSession[]
+    this.streak=0;
+    this.nextId=6;
+    this.formState={ courses:[], vibe:'', avail:{}, color:'#002d72', pfpData:null };
+    this.todayXP=0;
+    this.activeChatId=null;
+  }
+  addStudent(s){ this.students.push(s) }
+  setCurrentUser(s){ this.currentUser=s }
+  resetForm(){
+    this.formState={ courses:[], vibe:'', avail:{}, color:'#002d72', pfpData:null };
+  }
+  sendMessage(toId, text){
+    const key=`user-${toId}`;
+    if(!this.messages[key]) this.messages[key]=[];
+    this.messages[key].push(new Message('user', toId, text));
+  }
+  receiveMessage(fromId, text){
+    const key=`user-${fromId}`;
+    if(!this.messages[key]) this.messages[key]=[];
+    this.messages[key].push(new Message(fromId,'user',text));
+  }
+  getThread(sid){ return this.messages[`user-${sid}`] || [] }
+  addSession(session){
+    this.sessions.push(session);
+    const xp = session.getXP();
+    this.xpSystem.addXP(xp);
+    this.todayXP += xp;
+    return xp;
+  }
+}
+
+/* ============================================
+   SEED DATA
+   ============================================ */
+const DAYS=['Mon','Tue','Wed','Thu','Fri'];
+const TIMES=['Morning','Afternoon','Evening'];
+const app = new AppState();
+
+app.students = [
+  new Student(1,'Alex Rivera','Computer Science','Junior','Love DSA and competitive programming. Always down to grind LeetCode.',['CSCI 271','CSCI 272','MTH 241'],'silent','#1a4a9e',null,'https://linkedin.com/in/alexrivera',['Mon-Morning','Wed-Morning','Fri-Morning','Fri-Afternoon']),
+  new Student(2,'Jordan Kim','Criminal Justice','Sophomore','Pre-law track. Looking for study partners for midterms.',['CSCI 272','ENG 101','POL 101'],'casual','#d4537e',null,'',['Mon-Afternoon','Tue-Afternoon','Thu-Morning']),
+  new Student(3,'Sam Okonkwo','Computer Science','Senior','TA for CSCI 271. Happy to explain concepts — that\'s how I learn.',['CSCI 271','MTH 241','CRJ 101'],'explainer','#7F77DD',null,'https://linkedin.com/in/samokonkwo',['Wed-Morning','Wed-Afternoon','Fri-Morning']),
+  new Student(4,'Maya Torres','Computer Science','Junior','Full-stack dev. Hackathon enthusiast. Need a study group ASAP.',['CSCI 272','ENG 101'],'crunch','#D85A30',null,'',['Thu-Evening','Fri-Evening','Mon-Evening']),
+  new Student(5,'Chris Lam','Mathematics','Freshman','Tutoring available for MTH 241. Just starting CSCI.',['MTH 241','CSCI 271','ENG 101'],'explainer','#4a90d9',null,'https://linkedin.com/in/chrislam',['Mon-Morning','Tue-Morning','Wed-Morning','Thu-Morning'])
+];
+
+/* seed some messages */
+const autoReplies = {
+  1:["Hey! I'm free Wed morning if you want to study CSCI 272?","What IDE do you use?","Let's do a LeetCode session this week!"],
+  2:["Sure! I'm working on POL 101 right now 😅","Do you have notes from last Tuesday?","Group study at the library?"],
+  3:["I can definitely help with CSCI 271!","When's your next exam?","I have office hours Fridays if you need extra help."],
+  4:["We should do a hackathon together!","What stack are you using for your project?","Library 4th floor has great private rooms."],
+  5:["MTH 241 problem sets are brutal 😭","I have a great textbook PDF if you need it.","Study session Tuesday morning?"]
+};
+[1,2,3,4,5].forEach(id=>{
+  const replies = autoReplies[id];
+  app.receiveMessage(id, replies[0]);
+});
+
+/* ============================================
+   TIMER STATE
+   ============================================ */
+const TIMER_MODES = {
+  pomodoro:{label:'Focus Session',  mins:25},
+  short:   {label:'Short Break',    mins:5},
+  long:    {label:'Long Break',     mins:15},
+  custom:  {label:'Custom Session', mins:30}
+};
+let timerInterval=null, timerRunning=false;
+let timerSecsLeft=25*60, timerTotalSecs=25*60, timerMode='pomodoro';
+let completedPomodoros=0;
+
+/* ============================================
+   UTILITY
+   ============================================ */
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  document.getElementById('dark-btn').textContent = document.body.classList.contains('dark')?'☀️':'🌙';
+}
+
+function renderAvatar(s, size=44){
+  if(s.pfp) return `<div class="avatar" style="width:${size}px;height:${size}px;overflow:hidden;border-radius:50%"><img src="${s.pfp}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%"/></div>`;
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:${s.color};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${Math.floor(size*.3)}px">${s.getInitials()}</div>`;
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const btn = document.getElementById('nb-'+id);
+  if(btn) btn.classList.add('active');
+  if(id==='browse') renderBrowse();
+  if(id==='chat')   renderChatSidebar();
+  if(id==='leaderboard') renderLeaderboard();
+  if(id==='timer')  renderTimerDots();
+  if(id==='profile') renderMyProfile();
+}
+
+function showXPToast(xp, label=''){
+  const t=document.createElement('div');
+  t.className='xp-toast';
+  t.textContent=`+${xp} XP${label?' — '+label:''}`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2800);
+}
+
+/* ============================================
+   BROWSE
+   ============================================ */
+function renderBrowse(){
+  const sub=document.getElementById('browse-subtitle');
+  const grid=document.getElementById('students-grid');
+  const fr=document.getElementById('filter-row');
+  fr.innerHTML='';
+
+  if(app.currentUser){
+    sub.textContent=`Showing matches for ${app.currentUser.getFirstName()} — sorted by compatibility`;
+    const matches=MatchEngine.rankMatches(app.currentUser,app.students);
+    grid.innerHTML=matches.map(m=>{
+      const s=m.student;
+      return `<div class="student-card" onclick="openProfile(${s.id})">
+        <div class="match-score">${m.score}%</div>
+        <div class="card-top">${renderAvatar(s)}
+          <div><div class="card-name">${s.name}</div><div class="card-meta">${s.major} · ${s.year||''}</div></div>
+        </div>
+        ${s.bio?`<div class="card-bio">${s.bio}</div>`:''}
+        <div class="card-tags">
+          ${m.sharedCourses.map(c=>`<span class="tag course">📚 ${c}</span>`).join('')}
+          <span class="tag vibe">${s.vibeProfile.getEmoji()} ${s.vibeProfile.getLabel()}</span>
+        </div>
+        <div class="compat-bar-wrap">
+          <div class="compat-bar"><div class="compat-fill" style="width:${m.score}%"></div></div>
+          <div class="compat-label"><span>${m.sharedCourses.length} shared course${m.sharedCourses.length!==1?'s':''}</span><span>${m.sharedAvail.length} shared slots</span></div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          ${s.linkedin?`<a class="tag course" href="${s.linkedin}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none">🔗 LinkedIn</a>`:''}
+          <button onclick="event.stopPropagation();openChat(${s.id})" style="padding:4px 10px;background:var(--navy-dark);color:#fff;border:none;border-radius:999px;font-size:10px;font-weight:700;cursor:pointer">💬 Message</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    sub.textContent=`${app.students.length} students looking for study partners`;
+    grid.innerHTML=app.students.map(s=>`
+      <div class="student-card" onclick="openProfile(${s.id})">
+        <div class="card-top">${renderAvatar(s)}
+          <div><div class="card-name">${s.name}</div><div class="card-meta">${s.major} · ${s.year||''}</div></div>
+        </div>
+        ${s.bio?`<div class="card-bio">${s.bio}</div>`:''}
+        <div class="card-tags">
+          ${s.getCourseCodes().slice(0,3).map(c=>`<span class="tag course">${c}</span>`).join('')}
+          <span class="tag vibe">${s.vibeProfile.getEmoji()} ${s.vibeProfile.getLabel()}</span>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function openProfile(id){
+  const s=app.students.find(x=>x.id===id);
+  if(!s) return;
+  let matchHtml='';
+  if(app.currentUser && app.currentUser.id!==id){
+    const m=MatchEngine.calculateMatch(app.currentUser,s);
+    matchHtml=`<div style="background:var(--blue-xlight);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:.9rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-weight:800;color:var(--navy)">Compatibility</span>
+        <span style="font-size:18px;font-weight:800;color:var(--navy)">${m.score}%</span>
+      </div>
+      <div class="compat-bar" style="margin-bottom:5px"><div class="compat-fill" style="width:${m.score}%"></div></div>
+      <div style="font-size:11px;color:var(--navy)">
+        ${m.sharedCourses.length?`Shared: <strong>${m.sharedCourses.join(', ')}</strong><br/>`:'No shared courses<br/>'}
+        ${m.sharedAvail.length?`Free at same time: <strong>${m.sharedAvail.length} slots</strong>`:'No overlapping availability'}
+      </div>
+    </div>`;
+  }
+  document.getElementById('profile-detail-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+      ${renderAvatar(s,60)}
+      <div>
+        <div style="font-size:19px;font-weight:800">${s.name}</div>
+        <div style="font-size:12px;color:var(--muted)">${s.major}${s.year?' · '+s.year:''}</div>
+        ${s.linkedin?`<a href="${s.linkedin}" target="_blank" style="font-size:11px;color:var(--navy)">🔗 LinkedIn</a>`:''}
+      </div>
+    </div>
+    ${matchHtml}
+    ${s.bio?`<p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6">${s.bio}</p>`:''}
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Courses</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${s.getCourseCodes().map(c=>`<span class="tag course">${c}</span>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Study vibe</div>
+      <span class="tag vibe">${s.vibeProfile.getEmoji()} ${s.vibeProfile.getLabel()}</span>
+    </div>
+    ${s.avail.length?`<div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Usually free</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${s.avail.map(slot=>`<span class="tag course">${slot.replace('-',' ')}</span>`).join('')}</div>
+    </div>`:''}
+    <button onclick="closeModal('modal-profile-view');openChat(${s.id})" style="width:100%;padding:10px;background:var(--navy-dark);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;margin-top:.5rem">💬 Send a message</button>`;
+  document.getElementById('modal-profile-view').classList.add('open');
+}
+
+/* ============================================
+   CHAT
+   ============================================ */
+function renderChatSidebar(){
+  const container=document.getElementById('chat-contacts');
+  const unreadIds=[];
+  container.innerHTML=app.students.map(s=>{
+    const thread=app.getThread(s.id);
+    const last=thread.length?thread[thread.length-1]:null;
+    const preview=last?last.text.slice(0,38)+'…':'Say hello!';
+    const unread=thread.filter(m=>m.fromId===s.id).length;
+    if(unread>0) unreadIds.push(s.id);
+    return `<div class="chat-contact ${app.activeChatId===s.id?'active':''}" onclick="openChat(${s.id})">
+      ${renderAvatar(s,36)}
+      <div style="flex:1;min-width:0">
+        <div class="chat-contact-name">${s.name}</div>
+        <div class="chat-contact-preview">${preview}</div>
+      </div>
+      ${unread?`<div class="unread-badge">${unread}</div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('msg-dot').style.display=unreadIds.length?'inline-block':'none';
+}
+
+function openChat(sid){
+  if(!app.currentUser){
+    alert('Create your profile first to start messaging!');
+    openSignup(); return;
+  }
+  showPage('chat');
+  app.activeChatId=sid;
+  renderChatSidebar();
+  const s=app.students.find(x=>x.id===sid);
+  const main=document.getElementById('chat-main');
+  main.innerHTML=`
+    <div class="chat-header">
+      ${renderAvatar(s,32)}
+      <div>
+        <div>${s.name}</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:400">${s.major} · ${s.vibeProfile.getEmoji()} ${s.vibeProfile.getLabel()}</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="msg-list"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMsg(${sid})"/>
+      <button class="send-btn" onclick="sendMsg(${sid})">Send</button>
+    </div>`;
+  renderMessages(sid);
+  /* give XP for opening first chat */
+  if(!app.getThread(sid).find(m=>m.fromId==='user')){
+    /* first time messaging this person */
+  }
+}
+
+function renderMessages(sid){
+  const list=document.getElementById('msg-list');
+  if(!list) return;
+  const thread=app.getThread(sid);
+  list.innerHTML=thread.map(m=>{
+    const isMe=m.fromId==='user';
+    return `<div class="chat-bubble-wrap ${isMe?'me':''}">
+      <div class="chat-bubble ${isMe?'me':'them'}">${m.text}</div>
+      <div class="chat-bubble-time">${m.formatTime()}</div>
+    </div>`;
+  }).join('');
+  list.scrollTop=list.scrollHeight;
+}
+
+const autoReplyPool = {
+  1:["Sounds good! See you there 👍","I'll bring my laptop and notes.","LeetCode grind? I'm in!","Yeah CSCI 272 is rough this semester."],
+  2:["Omg yes I need help with that too 😭","The library has good study rooms on the 4th floor.","Can we meet Tuesday afternoon?","POL 101 exam is next week ahh"],
+  3:["Great! I can walk you through it step by step.","No problem! That concept is tricky at first.","Office hours are also Fridays 2-4pm.","Happy to help!"],
+  4:["YES hackathon team let's gooo 🚀","I'm using React + Node for mine.","The CS department has a project showcase next month.","We should submit something!"],
+  5:["The problem sets are so hard 😭","I actually found a good YouTube series for MTH 241.","Let's study at the library Tuesday?","I have all the past exams if you want them!"]
+};
+let replyTimeouts={};
+function sendMsg(sid){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text) return;
+  app.sendMessage(sid,text);
+  input.value='';
+  renderMessages(sid);
+  /* award XP for messaging */
+  app.xpSystem.addXP(5);
+  showXPToast(5,'Message sent');
+  /* auto-reply after 1.5s */
+  clearTimeout(replyTimeouts[sid]);
+  replyTimeouts[sid]=setTimeout(()=>{
+    const pool=autoReplyPool[sid]||["Got it!","Sure!","Let me know!"];
+    const reply=pool[Math.floor(Math.random()*pool.length)];
+    app.receiveMessage(sid,reply);
+    renderMessages(sid);
+    renderChatSidebar();
+  },1500);
+}
+
+/* ============================================
+   TIMER
+   ============================================ */
+function setMode(mode, el){
+  if(timerRunning) return;
+  timerMode=mode;
+  document.querySelectorAll('.timer-mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const mins=TIMER_MODES[mode].mins;
+  timerSecsLeft=mins*60; timerTotalSecs=mins*60;
+  document.getElementById('timer-label').textContent=TIMER_MODES[mode].label;
+  updateTimerDisplay();
+  updateTimerFill();
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerSecsLeft/60);
+  const s=timerSecsLeft%60;
+  document.getElementById('timer-display').textContent=
+    String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function updateTimerFill(){
+  const pct=timerTotalSecs>0?(timerSecsLeft/timerTotalSecs)*100:0;
+  document.getElementById('timer-fill').style.width=pct+'%';
+}
+
+function renderTimerDots(){
+  const dots=document.getElementById('timer-dots');
+  if(!dots) return;
+  const arr=Array(4).fill(0).map((_,i)=>`<div class="session-dot ${i<completedPomodoros?'done':''}"></div>`);
+  dots.innerHTML=arr.join('');
+}
+
+function updateSessionLog(){
+  const log=document.getElementById('session-log');
+  if(!log) return;
+  if(!app.sessions.length){log.textContent='No sessions yet — start your first Pomodoro!';return;}
+  log.innerHTML=app.sessions.slice(-5).reverse().map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid var(--border)">
+      <span>${s.label()}</span>
+      <span style="color:var(--navy);font-weight:700;font-size:12px">+${s.getXP()} XP</span>
+    </div>`).join('');
+}
+
+function toggleTimer(){
+  if(!app.currentUser){ alert('Join StudySync to track your study sessions!'); openSignup(); return; }
+  if(timerRunning){
+    clearInterval(timerInterval);
+    timerRunning=false;
+    document.getElementById('timer-toggle').textContent='▶ Resume';
+  } else {
+    timerRunning=true;
+    document.getElementById('timer-toggle').textContent='⏸ Pause';
+    timerInterval=setInterval(()=>{
+      timerSecsLeft--;
+      updateTimerDisplay();
+      updateTimerFill();
+      if(timerSecsLeft<=0){
+        clearInterval(timerInterval);
+        timerRunning=false;
+        document.getElementById('timer-toggle').textContent='▶ Start';
+        const session=new TimerSession(timerMode, TIMER_MODES[timerMode].mins);
+        session.markComplete();
+        const xp=app.addSession(session);
+        if(timerMode==='pomodoro'){ completedPomodoros=(completedPomodoros+1)%4; }
+        renderTimerDots();
+        updateSessionLog();
+        updateTimerXPLabel();
+        showXPToast(xp, session.label());
+        if(timerMode==='pomodoro') setMode('short',document.querySelector('.timer-mode-btn:nth-child(2)'));
+      }
+    },1000);
+  }
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerSecsLeft=TIMER_MODES[timerMode].mins*60;
+  timerTotalSecs=timerSecsLeft;
+  document.getElementById('timer-toggle').textContent='▶ Start';
+  updateTimerDisplay();
+  updateTimerFill();
+}
+
+function updateTimerXPLabel(){
+  const el=document.getElementById('timer-xp-today');
+  if(el) el.innerHTML=`Today: <strong>${app.todayXP} XP</strong> earned`;
+}
+
+/* ============================================
+   LEADERBOARD
+   ============================================ */
+function renderLeaderboard(){
+  const all=[...app.students];
+  if(app.currentUser) all.push({...app.currentUser, isYou:true, xp:app.xpSystem.xp, streak:app.streak||1});
+  all.sort((a,b)=>b.xp-a.xp);
+  const rankSymbols=['🥇','🥈','🥉'];
+  const rankClass=['gold','silver','bronze'];
+  document.getElementById('lb-table').innerHTML=
+    `<div class="lb-header">
+      <div>
+        <div class="lb-header-title">🏆 Weekly XP Leaderboard</div>
+        <div class="lb-header-sub">John Jay College — StudySync</div>
+      </div>
+    </div>`+
+    all.map((s,i)=>{
+      const isYou=s.isYou;
+      const rank=i<3?rankSymbols[i]:String(i+1);
+      const rankCls=i<3?rankClass[i]:'';
+      return `<div class="lb-row ${isYou?'lb-you':''}">
+        <div class="lb-rank ${rankCls}">${rank}</div>
+        ${renderAvatar(isYou?app.currentUser:s, 36)}
+        <div style="flex:1;min-width:0">
+          <div class="lb-name">${s.name}${isYou?' (you)':''}</div>
+          <div class="lb-meta">${s.major||''}${s.year?' · '+s.year:''}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="lb-xp">${s.xp} XP</div>
+          <div class="lb-streak">🔥 ${s.streak||1} day streak</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+/* ============================================
+   MY PROFILE
+   ============================================ */
+function renderMyProfile(){
+  const el=document.getElementById('profile-content');
+  if(!app.currentUser){
+    el.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:.5rem">👋</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:.5rem">You haven't joined yet</div>
+      <button class="hero-btn" onclick="openSignup()" style="font-size:13px;padding:10px 24px">Create your profile</button>
+    </div>`; return;
+  }
+  const u=app.currentUser;
+  const xp=app.xpSystem;
+  const days=['M','T','W','T','F','S','S'];
+  const streakDays=days.map((d,i)=>`<div class="streak-day ${i<(app.streak||1)?'done':''} ${i===(app.streak||1)-1?'today':''}">${d}</div>`).join('');
+  const badges=[
+    {label:'First Session',earned:app.sessions.length>0},
+    {label:'Social Butterfly',earned:Object.keys(app.messages).length>0},
+    {label:'Streak Starter',earned:(app.streak||1)>=3},
+    {label:'XP Hunter',earned:xp.xp>=100},
+    {label:'Study Pro',earned:xp.xp>=300},
+    {label:'Valedictorian',earned:xp.xp>=600},
+  ];
+  el.innerHTML=`
+    <div class="profile-hero">
+      <div class="level-badge">Level ${xp.level} · ${xp.getLevelLabel()}</div>
+      <div class="profile-hero-avatar">${u.pfp?`<img src="${u.pfp}"/>`:`<div style="width:80px;height:80px;border-radius:50%;background:${u.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800">${u.getInitials()}</div>`}</div>
+      <div>
+        <div class="profile-hero-name">${u.name}</div>
+        <div class="profile-hero-meta">${u.major}${u.year?' · '+u.year:''}</div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${xp.getProgress()}%"></div></div>
+        <div class="xp-label">${xp.xp} XP · ${xp.getNextXP()} to next level</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${xp.xp}</div><div class="stat-lbl">Total XP</div></div>
+      <div class="stat-card"><div class="stat-val">${app.sessions.length}</div><div class="stat-lbl">Sessions</div></div>
+      <div class="stat-card"><div class="stat-val">${app.streak||1}</div><div class="stat-lbl">Day Streak</div></div>
+      <div class="stat-card"><div class="stat-val">${Object.keys(app.messages).length}</div><div class="stat-lbl">Convos</div></div>
+    </div>
+    <div class="profile-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+        <div class="profile-section-title">Weekly Streak</div>
+      </div>
+      <div class="streak-row">${streakDays}</div>
+    </div>
+    <div class="profile-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+        <div class="profile-section-title">Courses & Vibe</div>
+        <button class="edit-btn-sm" onclick="openSignup()">Edit profile</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.5rem">
+        ${u.getCourseCodes().map(c=>`<span class="tag course">${c}</span>`).join('')}
+      </div>
+      <span class="tag vibe">${u.vibeProfile.getEmoji()} ${u.vibeProfile.getLabel()}</span>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Badges</div>
+      <div class="badge-grid">
+        ${badges.map(b=>`<span class="badge ${b.earned?'earned':'locked'}">${b.earned?'✓':'🔒'} ${b.label}</span>`).join('')}
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">Recent sessions</div>
+      <div id="profile-sessions" style="font-size:12px;color:var(--muted)">
+        ${app.sessions.length?
+          app.sessions.slice(-4).reverse().map(s=>`<div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--border)"><span>${s.label()}</span><span style="color:var(--navy);font-weight:700">+${s.getXP()} XP</span></div>`).join('')
+          :'No sessions yet — start the timer!'}
+      </div>
+    </div>`;
+}
+
+/* ============================================
+   SIGNUP FORM
+   ============================================ */
+function openSignup(){
+  app.resetForm();
+  ['f-name','f-major','f-bio','f-linkedin','f-course-input'].forEach(id=>{document.getElementById(id).value=''});
+  document.getElementById('f-year').value='';
+  document.getElementById('course-tags').innerHTML='';
+  document.querySelectorAll('.vibe-opt').forEach(v=>v.classList.remove('selected'));
+  document.querySelectorAll('.color-swatch').forEach(s=>{
+    s.classList.remove('selected');
+    if(s.dataset.color==='#002d72') s.classList.add('selected');
+  });
+  document.getElementById('pfp-preview').style.display='none';
+  document.getElementById('pfp-initials').style.display='flex';
+  document.getElementById('pfp-initials').textContent='?';
+  document.getElementById('pfp-initials').style.background='#002d72';
+  document.getElementById('form-error').style.display='none';
+  buildAvailGrid();
+  document.getElementById('modal-signup').classList.add('open');
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open') }
+
+function updateInitials(){
+  const name=document.getElementById('f-name').value.trim();
+  const initials=name?name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase():'?';
+  document.getElementById('pfp-initials').textContent=initials;
+}
+
+function handlePfp(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    app.formState.pfpData=e.target.result;
+    document.getElementById('pfp-preview').src=e.target.result;
+    document.getElementById('pfp-preview').style.display='block';
+    document.getElementById('pfp-initials').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function pickColor(el){
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  app.formState.color=el.dataset.color;
+  document.getElementById('pfp-initials').style.background=app.formState.color;
+}
+
+function addCourse(){
+  const input=document.getElementById('f-course-input');
+  const val=input.value.trim().toUpperCase();
+  if(!val||app.formState.courses.includes(val)) return;
+  app.formState.courses.push(val);
+  renderCourseTags(); input.value='';
+}
+
+function quickCourse(c){
+  if(!app.formState.courses.includes(c)){ app.formState.courses.push(c); renderCourseTags(); }
+}
+
+function removeCourse(c){
+  app.formState.courses=app.formState.courses.filter(x=>x!==c); renderCourseTags();
+}
+
+function renderCourseTags(){
+  document.getElementById('course-tags').innerHTML=app.formState.courses.map(c=>
+    `<span class="removable-tag">${c}<button onclick="removeCourse('${c}')" aria-label="Remove ${c}">×</button></span>`
+  ).join('');
+}
+
+function pickVibe(el,vibe){
+  document.querySelectorAll('.vibe-opt').forEach(v=>v.classList.remove('selected'));
+  el.classList.add('selected'); app.formState.vibe=vibe;
+}
+
+function buildAvailGrid(){
+  const grid=document.getElementById('avail-grid'); grid.innerHTML='';
+  const blank=document.createElement('div');
+  blank.style.cssText='background:transparent;border:none';
+  grid.appendChild(blank);
+  DAYS.forEach(d=>{ const c=document.createElement('div'); c.className='avail-cell header'; c.textContent=d; grid.appendChild(c); });
+  TIMES.forEach(t=>{
+    const tc=document.createElement('div'); tc.className='avail-cell header'; tc.textContent=t.slice(0,3); grid.appendChild(tc);
+    DAYS.forEach(d=>{
+      const key=d+'-'+t; const cell=document.createElement('div');
+      cell.className='avail-cell'+(app.formState.avail[key]?' on':'');
+      cell.onclick=()=>{ app.formState.avail[key]=!app.formState.avail[key]; cell.classList.toggle('on'); };
+      grid.appendChild(cell);
+    });
+  });
+}
+
+function submitProfile(){
+  const name=document.getElementById('f-name').value.trim();
+  const major=document.getElementById('f-major').value.trim();
+  const err=document.getElementById('form-error');
+  if(!name||!major){ err.textContent='Please fill in your name and major.'; err.style.display='block'; return; }
+  if(!app.formState.courses.length){ err.textContent='Add at least one course.'; err.style.display='block'; return; }
+  if(!app.formState.vibe){ err.textContent='Pick your study vibe.'; err.style.display='block'; return; }
+  err.style.display='none';
+  const s=new Student(
+    app.nextId++, name, major,
+    document.getElementById('f-year').value,
+    document.getElementById('f-bio').value.trim(),
+    [...app.formState.courses], app.formState.vibe, app.formState.color,
+    app.formState.pfpData, document.getElementById('f-linkedin').value.trim(),
+    Object.keys(app.formState.avail).filter(k=>app.formState.avail[k])
+  );
+  app.addStudent(s); app.setCurrentUser(s);
+  app.xpSystem.addXP(100); app.todayXP+=100;
+  app.streak=1;
+  closeModal('modal-signup');
+  showXPToast(100,'Profile created!');
+  setTimeout(()=>showPage('browse'),300);
+}
+
+/* ── INIT ── */
+renderBrowse();
+updateTimerDisplay();
+</script>
+</body>
+</html>
