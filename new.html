@@ -315,68 +315,529 @@ body.dark .quick-chip:hover{background:#28466f}
 </div>
 
 <script>
-const VIBES={silent:{label:'Silent grinder',emoji:'🎧'},explainer:{label:'Explainer',emoji:'📝'},casual:{label:'Casual collaborator',emoji:'☕'},crunch:{label:'Crunch mode',emoji:'⚡'}};
-const COMPAT={silent:{silent:100,explainer:60,casual:40,crunch:30},explainer:{silent:60,explainer:100,casual:85,crunch:55},casual:{silent:40,explainer:85,casual:100,crunch:45},crunch:{silent:30,explainer:55,casual:45,crunch:100}};
-const DAYS=['Mon','Tue','Wed','Thu','Fri'];
-const TIMES=['Morning','Afternoon','Evening'];
+/*
+  STUDYSYNC JJ - OBJECT-ORIENTED JAVASCRIPT VERSION
+  --------------------------------------------------
+  This section uses OOP concepts such as:
+  - Classes
+  - Constructors
+  - Objects
+  - Encapsulation
+  - Methods
+  - Static utility methods
+  - A separate matching engine class
+*/
 
-let students=[
-  {id:1,name:'Alex Rivera',major:'Computer Science',year:'Junior',bio:'Love DSA and competitive programming. Always down to grind LeetCode.',courses:['CSCI 271','CSCI 272','MTH 241'],vibe:'silent',color:'#378ADD',pfp:null,linkedin:'https://linkedin.com/in/alexrivera',avail:['Mon-Morning','Wed-Morning','Fri-Morning','Fri-Afternoon']},
-  {id:2,name:'Jordan Kim',major:'Criminal Justice',year:'Sophomore',bio:'Pre-law track. Looking for study partners for midterms.',courses:['CSCI 272','ENG 101','POL 101'],vibe:'casual',color:'#d4537e',pfp:null,linkedin:'',avail:['Mon-Afternoon','Tue-Afternoon','Thu-Morning']},
-  {id:3,name:'Sam Okonkwo',major:'Computer Science',year:'Senior',bio:'TA for CSCI 271. Happy to explain concepts — that is how I learn.',courses:['CSCI 271','MTH 241','CRJ 101'],vibe:'explainer',color:'#7F77DD',pfp:null,linkedin:'https://linkedin.com/in/samokonkwo',avail:['Wed-Morning','Wed-Afternoon','Fri-Morning']},
-  {id:4,name:'Maya Torres',major:'Computer Science',year:'Junior',bio:'Full-stack dev. Hackathon enthusiast. Need a study group ASAP.',courses:['CSCI 272','ENG 101'],vibe:'crunch',color:'#D85A30',pfp:null,linkedin:'',avail:['Thu-Evening','Fri-Evening','Mon-Evening']},
-  {id:5,name:'Chris Lam',major:'Mathematics',year:'Freshman',bio:'Tutoring available for MTH 241. Just starting CSCI.',courses:['MTH 241','CSCI 271','ENG 101'],vibe:'explainer',color:'#BA7517',pfp:null,linkedin:'https://linkedin.com/in/chrislam',avail:['Mon-Morning','Tue-Morning','Wed-Morning','Thu-Morning']}
-];
+/*
+  VibeProfile represents a student's study personality.
+  It stores the vibe key, label, emoji, and compatibility rules.
+*/
+class VibeProfile {
+  constructor(type) {
+    this.type = type;
 
-let nextId=6;
-let formState={courses:[],vibe:'',avail:{},color:'#1f5fbf',pfpData:null};
-let currentUser=null;
+    this.vibes = {
+      silent: { label: 'Silent grinder', emoji: '🎧' },
+      explainer: { label: 'Explainer', emoji: '📝' },
+      casual: { label: 'Casual collaborator', emoji: '☕' },
+      crunch: { label: 'Crunch mode', emoji: '⚡' }
+    };
 
-function toggleDarkMode(){document.body.classList.toggle('dark');document.getElementById('dark-mode-btn').textContent=document.body.classList.contains('dark')?'☀️':'🌙'}
-function getInitials(name){return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
-function renderAvatar(s,size=48){if(s.pfp)return `<div class="avatar" style="width:${size}px;height:${size}px;"><img src="${s.pfp}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;"/></div>`;return `<div class="avatar" style="width:${size}px;height:${size}px;background:${s.color};color:#fff;">${getInitials(s.name)}</div>`}
-function calcMatch(a,b){const shared=a.courses.filter(c=>b.courses.includes(c));const vibeScore=COMPAT[a.vibe]?.[b.vibe]||50;const aAvail=a.avail||[];const bAvail=b.avail||[];const sharedAvail=aAvail.filter(x=>bAvail.includes(x));const courseScore=Math.min(100,shared.length*33);const availScore=Math.min(100,sharedAvail.length*25);return{score:Math.round(courseScore*.45+vibeScore*.35+availScore*.2),sharedCourses:shared,sharedAvail:sharedAvail}}
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');if(id==='browse')renderBrowse()}
+    this.compatibilityTable = {
+      silent: { silent: 100, explainer: 60, casual: 40, crunch: 30 },
+      explainer: { silent: 60, explainer: 100, casual: 85, crunch: 55 },
+      casual: { silent: 40, explainer: 85, casual: 100, crunch: 45 },
+      crunch: { silent: 30, explainer: 55, casual: 45, crunch: 100 }
+    };
+  }
 
-function renderBrowse(){
-  const sub=document.getElementById('browse-subtitle');const grid=document.getElementById('students-grid');const filterRow=document.getElementById('filter-row');filterRow.innerHTML='';
-  if(currentUser){
-    sub.textContent=`Showing matches for ${currentUser.name.split(' ')[0]} — sorted by compatibility`;
-    const scored=students.filter(s=>s.id!==currentUser.id).map(s=>{const m=calcMatch(currentUser,s);return{...s,...m}}).sort((a,b)=>b.score-a.score);
-    grid.innerHTML=scored.map(s=>`<div class="student-card" onclick="openProfile(${s.id})"><div class="match-score">${s.score}% match</div><div class="card-top">${renderAvatar(s)}<div><div class="card-name">${s.name}</div><div class="card-meta">${s.major} · ${s.year||''}</div></div></div>${s.bio?`<div class="card-bio">${s.bio}</div>`:''}<div class="card-tags">${s.sharedCourses.map(c=>`<span class="tag course">📚 ${c}</span>`).join('')}<span class="tag vibe">${VIBES[s.vibe]?.emoji||''} ${VIBES[s.vibe]?.label||''}</span></div><div class="compat-bar-wrap"><div class="compat-bar"><div class="compat-fill" style="width:${s.score}%"></div></div><div class="compat-label"><span>${s.sharedCourses.length} shared course${s.sharedCourses.length!==1?'s':''}</span><span>${s.sharedAvail.length} shared slot${s.sharedAvail.length!==1?'s':''}</span></div></div>${s.linkedin?`<div style="margin-top:8px;"><a class="linkedin-link" href="${s.linkedin}" target="_blank" onclick="event.stopPropagation()">🔗 LinkedIn</a></div>`:''}</div>`).join('');
-  }else{
-    sub.textContent=`${students.length} students looking for study partners`;
-    grid.innerHTML=students.map(s=>`<div class="student-card" onclick="openProfile(${s.id})"><div class="card-top">${renderAvatar(s)}<div><div class="card-name">${s.name}</div><div class="card-meta">${s.major} · ${s.year||''}</div></div></div>${s.bio?`<div class="card-bio">${s.bio}</div>`:''}<div class="card-tags">${s.courses.slice(0,3).map(c=>`<span class="tag course">${c}</span>`).join('')}<span class="tag vibe">${VIBES[s.vibe]?.emoji||''} ${VIBES[s.vibe]?.label||''}</span></div>${s.linkedin?`<div style="margin-top:8px;"><a class="linkedin-link" href="${s.linkedin}" target="_blank" onclick="event.stopPropagation()">🔗 LinkedIn</a></div>`:''}</div>`).join('');
+  getLabel() {
+    return this.vibes[this.type]?.label || this.type;
+  }
+
+  getEmoji() {
+    return this.vibes[this.type]?.emoji || '';
+  }
+
+  getCompatibility(otherVibeProfile) {
+    return this.compatibilityTable[this.type]?.[otherVibeProfile.type] || 50;
   }
 }
 
-function openProfile(id){
-  const s=students.find(x=>x.id===id);if(!s)return;let matchHtml='';
-  if(currentUser&&currentUser.id!==id){const m=calcMatch(currentUser,s);matchHtml=`<div style="background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-weight:800;color:var(--primary-dark);">Your compatibility</span><span style="font-size:20px;font-weight:800;color:var(--primary);">${m.score}%</span></div><div class="compat-bar" style="margin-bottom:6px;"><div class="compat-fill" style="width:${m.score}%"></div></div><div style="font-size:12px;color:var(--primary-dark);">${m.sharedCourses.length?`Shared courses: <strong>${m.sharedCourses.join(', ')}</strong><br/>`:'No shared courses<br/>'}${m.sharedAvail.length?`Free at same time: <strong>${m.sharedAvail.length} slot${m.sharedAvail.length!==1?'s':''}</strong>`:'No overlapping availability'}</div></div>`}
-  const availSlots=s.avail||[];
-  document.getElementById('profile-detail-content').innerHTML=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:1.25rem;">${renderAvatar(s,64)}<div><div style="font-size:20px;font-weight:800;">${s.name}</div><div style="font-size:13px;color:var(--muted);">${s.major}${s.year?' · '+s.year:''}</div>${s.linkedin?`<a class="linkedin-link" href="${s.linkedin}" target="_blank" style="margin-top:4px;display:inline-flex;">🔗 LinkedIn profile</a>`:''}</div></div>${matchHtml}${s.bio?`<p style="font-size:14px;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">${s.bio}</p>`:''}<div style="margin-bottom:1.25rem;"><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Courses</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${s.courses.map(c=>`<span class="tag course">${c}</span>`).join('')}</div></div><div style="margin-bottom:1.25rem;"><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Study vibe</div><span class="tag vibe" style="font-size:13px;">${VIBES[s.vibe]?.emoji||''} ${VIBES[s.vibe]?.label||s.vibe}</span></div>${availSlots.length?`<div><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Usually free</div><div style="display:flex;flex-wrap:wrap;gap:5px;">${availSlots.map(a=>`<span class="tag course">${a.replace('-',' ')}</span>`).join('')}</div></div>`:''}`;
+/*
+  Course represents one course tag, such as CSCI 272.
+  This keeps course formatting consistent throughout the app.
+*/
+class Course {
+  constructor(code) {
+    this.code = code.trim().toUpperCase();
+  }
+}
+
+/*
+  Student represents one student profile.
+  Each student object stores profile data and has methods for comparing
+  courses and availability with another student.
+*/
+class Student {
+  constructor(id, name, major, year, bio, courses, vibe, color, pfp, linkedin, avail) {
+    this.id = id;
+    this.name = name;
+    this.major = major;
+    this.year = year;
+    this.bio = bio;
+    this.courses = courses.map(course => new Course(course));
+    this.vibeProfile = new VibeProfile(vibe);
+    this.color = color;
+    this.pfp = pfp;
+    this.linkedin = linkedin;
+    this.avail = avail;
+  }
+
+  getCourseCodes() {
+    return this.courses.map(course => course.code);
+  }
+
+  getInitials() {
+    return this.name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  getFirstName() {
+    return this.name.split(' ')[0];
+  }
+
+  getSharedCourses(otherStudent) {
+    return this.getCourseCodes().filter(course =>
+      otherStudent.getCourseCodes().includes(course)
+    );
+  }
+
+  getSharedAvailability(otherStudent) {
+    return this.avail.filter(slot =>
+      otherStudent.avail.includes(slot)
+    );
+  }
+}
+
+/*
+  MatchResult stores the final compatibility result between two students.
+  This makes the matching result easier to pass around and display.
+*/
+class MatchResult {
+  constructor(student, score, sharedCourses, sharedAvail) {
+    this.student = student;
+    this.score = score;
+    this.sharedCourses = sharedCourses;
+    this.sharedAvail = sharedAvail;
+  }
+}
+
+/*
+  MatchEngine contains the matching algorithm.
+  It compares course overlap, study vibe compatibility, and availability.
+*/
+class MatchEngine {
+  static calculateMatch(studentA, studentB) {
+    const sharedCourses = studentA.getSharedCourses(studentB);
+    const sharedAvail = studentA.getSharedAvailability(studentB);
+
+    const courseScore = Math.min(100, sharedCourses.length * 33);
+    const vibeScore = studentA.vibeProfile.getCompatibility(studentB.vibeProfile);
+    const availabilityScore = Math.min(100, sharedAvail.length * 25);
+
+    const finalScore = Math.round(
+      courseScore * 0.45 +
+      vibeScore * 0.35 +
+      availabilityScore * 0.20
+    );
+
+    return new MatchResult(studentB, finalScore, sharedCourses, sharedAvail);
+  }
+
+  static rankMatches(currentUser, allStudents) {
+    return allStudents
+      .filter(student => student.id !== currentUser.id)
+      .map(student => this.calculateMatch(currentUser, student))
+      .sort((a, b) => b.score - a.score);
+  }
+}
+
+/*
+  AppState manages the main app data.
+  This keeps global data organized in one object instead of scattered everywhere.
+*/
+class AppState {
+  constructor() {
+    this.students = [];
+    this.currentUser = null;
+    this.nextId = 6;
+    this.formState = {
+      courses: [],
+      vibe: '',
+      avail: {},
+      color: '#1f5fbf',
+      pfpData: null
+    };
+  }
+
+  addStudent(student) {
+    this.students.push(student);
+  }
+
+  setCurrentUser(student) {
+    this.currentUser = student;
+  }
+
+  resetFormState() {
+    this.formState = {
+      courses: [],
+      vibe: '',
+      avail: {},
+      color: '#1f5fbf',
+      pfpData: null
+    };
+  }
+}
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const TIMES = ['Morning', 'Afternoon', 'Evening'];
+const app = new AppState();
+
+/*
+  These are sample Student objects used for the live demo.
+  Notice that every profile is created from the Student class.
+*/
+app.students = [
+  new Student(1, 'Alex Rivera', 'Computer Science', 'Junior', 'Love DSA and competitive programming. Always down to grind LeetCode.', ['CSCI 271', 'CSCI 272', 'MTH 241'], 'silent', '#378ADD', null, 'https://linkedin.com/in/alexrivera', ['Mon-Morning', 'Wed-Morning', 'Fri-Morning', 'Fri-Afternoon']),
+  new Student(2, 'Jordan Kim', 'Criminal Justice', 'Sophomore', 'Pre-law track. Looking for study partners for midterms.', ['CSCI 272', 'ENG 101', 'POL 101'], 'casual', '#d4537e', null, '', ['Mon-Afternoon', 'Tue-Afternoon', 'Thu-Morning']),
+  new Student(3, 'Sam Okonkwo', 'Computer Science', 'Senior', 'TA for CSCI 271. Happy to explain concepts — that is how I learn.', ['CSCI 271', 'MTH 241', 'CRJ 101'], 'explainer', '#7F77DD', null, 'https://linkedin.com/in/samokonkwo', ['Wed-Morning', 'Wed-Afternoon', 'Fri-Morning']),
+  new Student(4, 'Maya Torres', 'Computer Science', 'Junior', 'Full-stack dev. Hackathon enthusiast. Need a study group ASAP.', ['CSCI 272', 'ENG 101'], 'crunch', '#D85A30', null, '', ['Thu-Evening', 'Fri-Evening', 'Mon-Evening']),
+  new Student(5, 'Chris Lam', 'Mathematics', 'Freshman', 'Tutoring available for MTH 241. Just starting CSCI.', ['MTH 241', 'CSCI 271', 'ENG 101'], 'explainer', '#BA7517', null, 'https://linkedin.com/in/chrislam', ['Mon-Morning', 'Tue-Morning', 'Wed-Morning', 'Thu-Morning'])
+];
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  document.getElementById('dark-mode-btn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+function renderAvatar(student, size = 48) {
+  if (student.pfp) {
+    return `<div class="avatar" style="width:${size}px;height:${size}px;"><img src="${student.pfp}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;"/></div>`;
+  }
+
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:${student.color};color:#fff;">${student.getInitials()}</div>`;
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+
+  if (id === 'browse') {
+    renderBrowse();
+  }
+}
+
+function renderBrowse() {
+  const subtitle = document.getElementById('browse-subtitle');
+  const grid = document.getElementById('students-grid');
+  const filterRow = document.getElementById('filter-row');
+  filterRow.innerHTML = '';
+
+  if (app.currentUser) {
+    subtitle.textContent = `Showing matches for ${app.currentUser.getFirstName()} — sorted by compatibility`;
+    const matches = MatchEngine.rankMatches(app.currentUser, app.students);
+
+    grid.innerHTML = matches.map(match => {
+      const student = match.student;
+
+      return `
+        <div class="student-card" onclick="openProfile(${student.id})">
+          <div class="match-score">${match.score}% match</div>
+          <div class="card-top">
+            ${renderAvatar(student)}
+            <div>
+              <div class="card-name">${student.name}</div>
+              <div class="card-meta">${student.major} · ${student.year || ''}</div>
+            </div>
+          </div>
+          ${student.bio ? `<div class="card-bio">${student.bio}</div>` : ''}
+          <div class="card-tags">
+            ${match.sharedCourses.map(course => `<span class="tag course">📚 ${course}</span>`).join('')}
+            <span class="tag vibe">${student.vibeProfile.getEmoji()} ${student.vibeProfile.getLabel()}</span>
+          </div>
+          <div class="compat-bar-wrap">
+            <div class="compat-bar"><div class="compat-fill" style="width:${match.score}%"></div></div>
+            <div class="compat-label">
+              <span>${match.sharedCourses.length} shared course${match.sharedCourses.length !== 1 ? 's' : ''}</span>
+              <span>${match.sharedAvail.length} shared slot${match.sharedAvail.length !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+          ${student.linkedin ? `<div style="margin-top:8px;"><a class="linkedin-link" href="${student.linkedin}" target="_blank" onclick="event.stopPropagation()">🔗 LinkedIn</a></div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } else {
+    subtitle.textContent = `${app.students.length} students looking for study partners`;
+
+    grid.innerHTML = app.students.map(student => `
+      <div class="student-card" onclick="openProfile(${student.id})">
+        <div class="card-top">
+          ${renderAvatar(student)}
+          <div>
+            <div class="card-name">${student.name}</div>
+            <div class="card-meta">${student.major} · ${student.year || ''}</div>
+          </div>
+        </div>
+        ${student.bio ? `<div class="card-bio">${student.bio}</div>` : ''}
+        <div class="card-tags">
+          ${student.getCourseCodes().slice(0, 3).map(course => `<span class="tag course">${course}</span>`).join('')}
+          <span class="tag vibe">${student.vibeProfile.getEmoji()} ${student.vibeProfile.getLabel()}</span>
+        </div>
+        ${student.linkedin ? `<div style="margin-top:8px;"><a class="linkedin-link" href="${student.linkedin}" target="_blank" onclick="event.stopPropagation()">🔗 LinkedIn</a></div>` : ''}
+      </div>
+    `).join('');
+  }
+}
+
+function openProfile(id) {
+  const student = app.students.find(item => item.id === id);
+  if (!student) return;
+
+  let matchHtml = '';
+
+  if (app.currentUser && app.currentUser.id !== id) {
+    const match = MatchEngine.calculateMatch(app.currentUser, student);
+
+    matchHtml = `
+      <div style="background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-weight:800;color:var(--primary-dark);">Your compatibility</span>
+          <span style="font-size:20px;font-weight:800;color:var(--primary);">${match.score}%</span>
+        </div>
+        <div class="compat-bar" style="margin-bottom:6px;"><div class="compat-fill" style="width:${match.score}%"></div></div>
+        <div style="font-size:12px;color:var(--primary-dark);">
+          ${match.sharedCourses.length ? `Shared courses: <strong>${match.sharedCourses.join(', ')}</strong><br/>` : 'No shared courses<br/>'}
+          ${match.sharedAvail.length ? `Free at same time: <strong>${match.sharedAvail.length} slot${match.sharedAvail.length !== 1 ? 's' : ''}</strong>` : 'No overlapping availability'}
+        </div>
+      </div>
+    `;
+  }
+
+  const availSlots = student.avail || [];
+
+  document.getElementById('profile-detail-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.25rem;">
+      ${renderAvatar(student, 64)}
+      <div>
+        <div style="font-size:20px;font-weight:800;">${student.name}</div>
+        <div style="font-size:13px;color:var(--muted);">${student.major}${student.year ? ' · ' + student.year : ''}</div>
+        ${student.linkedin ? `<a class="linkedin-link" href="${student.linkedin}" target="_blank" style="margin-top:4px;display:inline-flex;">🔗 LinkedIn profile</a>` : ''}
+      </div>
+    </div>
+    ${matchHtml}
+    ${student.bio ? `<p style="font-size:14px;color:var(--muted);margin-bottom:1.25rem;line-height:1.6;">${student.bio}</p>` : ''}
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Courses</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${student.getCourseCodes().map(course => `<span class="tag course">${course}</span>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Study vibe</div>
+      <span class="tag vibe" style="font-size:13px;">${student.vibeProfile.getEmoji()} ${student.vibeProfile.getLabel()}</span>
+    </div>
+    ${availSlots.length ? `
+      <div>
+        <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Usually free</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">${availSlots.map(slot => `<span class="tag course">${slot.replace('-', ' ')}</span>`).join('')}</div>
+      </div>
+    ` : ''}
+  `;
+
   document.getElementById('modal-profile').classList.add('open');
 }
 
-function openSignup(){
-  formState={courses:[],vibe:'',avail:{},color:'#1f5fbf',pfpData:null};
-  document.getElementById('f-name').value='';document.getElementById('f-major').value='';document.getElementById('f-year').value='';document.getElementById('f-bio').value='';document.getElementById('f-linkedin').value='';document.getElementById('f-course-input').value='';document.getElementById('course-tags').innerHTML='';
-  document.querySelectorAll('.vibe-opt').forEach(v=>v.classList.remove('selected'));
-  document.querySelectorAll('.color-swatch').forEach(s=>{s.classList.remove('selected');if(s.dataset.color==='#1f5fbf')s.classList.add('selected')});
-  document.getElementById('pfp-preview').style.display='none';document.getElementById('pfp-initials').style.display='flex';document.getElementById('pfp-initials').textContent='?';document.getElementById('pfp-initials').style.background='#1f5fbf';document.getElementById('form-error').style.display='none';
-  buildAvailGrid();document.getElementById('modal-signup').classList.add('open');
+function openSignup() {
+  app.resetFormState();
+
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-major').value = '';
+  document.getElementById('f-year').value = '';
+  document.getElementById('f-bio').value = '';
+  document.getElementById('f-linkedin').value = '';
+  document.getElementById('f-course-input').value = '';
+  document.getElementById('course-tags').innerHTML = '';
+
+  document.querySelectorAll('.vibe-opt').forEach(vibe => vibe.classList.remove('selected'));
+  document.querySelectorAll('.color-swatch').forEach(swatch => {
+    swatch.classList.remove('selected');
+    if (swatch.dataset.color === '#1f5fbf') swatch.classList.add('selected');
+  });
+
+  document.getElementById('pfp-preview').style.display = 'none';
+  document.getElementById('pfp-initials').style.display = 'flex';
+  document.getElementById('pfp-initials').textContent = '?';
+  document.getElementById('pfp-initials').style.background = '#1f5fbf';
+  document.getElementById('form-error').style.display = 'none';
+
+  buildAvailGrid();
+  document.getElementById('modal-signup').classList.add('open');
 }
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-function updateInitials(){const name=document.getElementById('f-name').value.trim();const el=document.getElementById('pfp-initials');el.textContent=name?getInitials(name):'?'}
-function handlePfp(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{formState.pfpData=e.target.result;document.getElementById('pfp-preview').src=e.target.result;document.getElementById('pfp-preview').style.display='block';document.getElementById('pfp-initials').style.display='none'};reader.readAsDataURL(file)}
-function pickColor(el){document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));el.classList.add('selected');formState.color=el.dataset.color;document.getElementById('pfp-initials').style.background=formState.color}
-function addCourse(){const inp=document.getElementById('f-course-input');const val=inp.value.trim().toUpperCase();if(!val||formState.courses.includes(val))return;formState.courses.push(val);renderCourseTags();inp.value=''}
-function quickCourse(c){if(!formState.courses.includes(c)){formState.courses.push(c);renderCourseTags()}}
-function removeCourse(c){formState.courses=formState.courses.filter(x=>x!==c);renderCourseTags()}
-function renderCourseTags(){document.getElementById('course-tags').innerHTML=formState.courses.map(c=>`<span class="removable-tag">${c}<button onclick="removeCourse('${c}')" aria-label="Remove ${c}">×</button></span>`).join('')}
-function pickVibe(el,v){document.querySelectorAll('.vibe-opt').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');formState.vibe=v}
-function buildAvailGrid(){const g=document.getElementById('avail-grid');g.innerHTML='';const blank=document.createElement('div');blank.style.cssText='background:transparent;border:none;';g.appendChild(blank);DAYS.forEach(d=>{const el=document.createElement('div');el.className='avail-cell header';el.textContent=d;g.appendChild(el)});TIMES.forEach(t=>{const tEl=document.createElement('div');tEl.className='avail-cell header';tEl.textContent=t.slice(0,3);g.appendChild(tEl);DAYS.forEach(d=>{const key=d+'-'+t;const el=document.createElement('div');el.className='avail-cell'+(formState.avail[key]?' on':'');el.onclick=()=>{formState.avail[key]=!formState.avail[key];el.classList.toggle('on')};g.appendChild(el)})})}
-function submitProfile(){const name=document.getElementById('f-name').value.trim();const major=document.getElementById('f-major').value.trim();const errEl=document.getElementById('form-error');if(!name||!major){errEl.textContent='Please fill in your name and major.';errEl.style.display='block';return}if(!formState.courses.length){errEl.textContent='Add at least one course.';errEl.style.display='block';return}if(!formState.vibe){errEl.textContent='Pick your study vibe.';errEl.style.display='block';return}errEl.style.display='none';const student={id:nextId++,name,major,year:document.getElementById('f-year').value,bio:document.getElementById('f-bio').value.trim(),linkedin:document.getElementById('f-linkedin').value.trim(),courses:[...formState.courses],vibe:formState.vibe,color:formState.color,pfp:formState.pfpData,avail:Object.keys(formState.avail).filter(k=>formState.avail[k])};students.push(student);currentUser=student;closeModal('modal-signup');showPage('browse')}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function updateInitials() {
+  const name = document.getElementById('f-name').value.trim();
+  const initials = name
+    ? name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase()
+    : '?';
+
+  document.getElementById('pfp-initials').textContent = initials;
+}
+
+function handlePfp(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = event => {
+    app.formState.pfpData = event.target.result;
+    document.getElementById('pfp-preview').src = event.target.result;
+    document.getElementById('pfp-preview').style.display = 'block';
+    document.getElementById('pfp-initials').style.display = 'none';
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function pickColor(element) {
+  document.querySelectorAll('.color-swatch').forEach(swatch => swatch.classList.remove('selected'));
+  element.classList.add('selected');
+  app.formState.color = element.dataset.color;
+  document.getElementById('pfp-initials').style.background = app.formState.color;
+}
+
+function addCourse() {
+  const input = document.getElementById('f-course-input');
+  const value = input.value.trim().toUpperCase();
+
+  if (!value || app.formState.courses.includes(value)) return;
+
+  app.formState.courses.push(value);
+  renderCourseTags();
+  input.value = '';
+}
+
+function quickCourse(course) {
+  if (!app.formState.courses.includes(course)) {
+    app.formState.courses.push(course);
+    renderCourseTags();
+  }
+}
+
+function removeCourse(course) {
+  app.formState.courses = app.formState.courses.filter(item => item !== course);
+  renderCourseTags();
+}
+
+function renderCourseTags() {
+  document.getElementById('course-tags').innerHTML = app.formState.courses.map(course =>
+    `<span class="removable-tag">${course}<button onclick="removeCourse('${course}')" aria-label="Remove ${course}">×</button></span>`
+  ).join('');
+}
+
+function pickVibe(element, vibe) {
+  document.querySelectorAll('.vibe-opt').forEach(option => option.classList.remove('selected'));
+  element.classList.add('selected');
+  app.formState.vibe = vibe;
+}
+
+function buildAvailGrid() {
+  const grid = document.getElementById('avail-grid');
+  grid.innerHTML = '';
+
+  const blank = document.createElement('div');
+  blank.style.cssText = 'background:transparent;border:none;';
+  grid.appendChild(blank);
+
+  DAYS.forEach(day => {
+    const cell = document.createElement('div');
+    cell.className = 'avail-cell header';
+    cell.textContent = day;
+    grid.appendChild(cell);
+  });
+
+  TIMES.forEach(time => {
+    const timeCell = document.createElement('div');
+    timeCell.className = 'avail-cell header';
+    timeCell.textContent = time.slice(0, 3);
+    grid.appendChild(timeCell);
+
+    DAYS.forEach(day => {
+      const key = day + '-' + time;
+      const cell = document.createElement('div');
+      cell.className = 'avail-cell' + (app.formState.avail[key] ? ' on' : '');
+
+      cell.onclick = () => {
+        app.formState.avail[key] = !app.formState.avail[key];
+        cell.classList.toggle('on');
+      };
+
+      grid.appendChild(cell);
+    });
+  });
+}
+
+function submitProfile() {
+  const name = document.getElementById('f-name').value.trim();
+  const major = document.getElementById('f-major').value.trim();
+  const errorElement = document.getElementById('form-error');
+
+  if (!name || !major) {
+    errorElement.textContent = 'Please fill in your name and major.';
+    errorElement.style.display = 'block';
+    return;
+  }
+
+  if (!app.formState.courses.length) {
+    errorElement.textContent = 'Add at least one course.';
+    errorElement.style.display = 'block';
+    return;
+  }
+
+  if (!app.formState.vibe) {
+    errorElement.textContent = 'Pick your study vibe.';
+    errorElement.style.display = 'block';
+    return;
+  }
+
+  errorElement.style.display = 'none';
+
+  const newStudent = new Student(
+    app.nextId++,
+    name,
+    major,
+    document.getElementById('f-year').value,
+    document.getElementById('f-bio').value.trim(),
+    [...app.formState.courses],
+    app.formState.vibe,
+    app.formState.color,
+    app.formState.pfpData,
+    document.getElementById('f-linkedin').value.trim(),
+    Object.keys(app.formState.avail).filter(key => app.formState.avail[key])
+  );
+
+  app.addStudent(newStudent);
+  app.setCurrentUser(newStudent);
+  closeModal('modal-signup');
+  showPage('browse');
+}
 
 renderBrowse();
 </script>
