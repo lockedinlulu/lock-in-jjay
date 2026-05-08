@@ -5,13 +5,19 @@ A study group matcher for John Jay College students — built for the way you pr
 StudySync JJ helps John Jay students find compatible study partners based on three things most matcher apps ignore: not just what courses you're taking, but when you're free and how you like to study. No more getting paired with someone who wants to chat when you need to grind.
 
 ## Features
-### Study Vibe Matching — Students pick a study personality when they sign up: Silent Grinder, Explainer, Casual Collaborator, or Crunch Mode. The matching algorithm weighs vibe compatibility alongside course overlap so you actually mesh with your study partner.
-### Smart Matching Algorithm — Compatibility scores are calculated from three signals: shared courses (45%), vibe compatibility (35%), and overlapping availability (20%). Every student in browse is ranked by how well they match you specifically.
-### XP & Leaderboard — Earn points for actions inside the app: signing up, adding courses, completing study sessions, daily check-ins, and forming groups. The leaderboard ranks students by total XP — no self-reporting, no cheating.
-### Daily Streaks — Study (or check in) every day to build your streak. Hit 7 days and earn a fire badge. Stored locally so it persists across sessions.
-### Session Timer — Hit "Start Session" when you sit down to study with someone. The live stopwatch tracks your time. End the session and XP is automatically awarded.
-### Direct Messages — Message any student directly from their profile. Good for coordinating before a session or just breaking the ice.
-### Course Tags — Filter students by course code (CSCI 272, MTH 241, etc.) to find people in the same class fast.
+Study Vibe Matching — Students pick a study personality when they sign up: Silent Grinder, Explainer, Casual Collaborator, or Crunch Mode. The matching algorithm weighs vibe compatibility alongside course overlap so you actually mesh with your study partner.
+ 
+Smart Matching Algorithm — Compatibility scores are calculated from three signals: shared courses (45%), vibe compatibility (35%), and overlapping availability (20%). Every student in browse is ranked by how well they match you specifically.
+
+XP & Leaderboard — Earn points for actions inside the app: signing up, adding courses, completing study sessions, daily check-ins, and forming groups. The leaderboard ranks students by total XP — no self-reporting, no cheating.
+ 
+Daily Streaks — Study (or check in) every day to build your streak. Hit 7 days and earn a fire badge. Stored locally so it persists across sessions.
+ 
+Session Timer — Hit "Start Session" when you sit down to study with someone. The live stopwatch tracks your time. End the session and XP is automatically awarded.
+
+Direct Messages — Message any student directly from their profile. Good for coordinating before a session or just breaking the ice.
+ 
+Course Tags — Filter students by course code (CSCI 272, MTH 241, etc.) to find people in the same class fast.
 
 ## OOP Structure
 The app is organized around four core classes:
