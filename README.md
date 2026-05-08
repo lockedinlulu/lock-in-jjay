@@ -1,5 +1,5 @@
 # StudySync JJAY
-A study group matcher for John Jay College students — built for the way prefer to study.
+A study group matcher for John Jay College students — built for the way you prefer to study.
 
 ## What it does
 StudySync JJ helps John Jay students find compatible study partners based on three things most matcher apps ignore: not just what courses you're taking, but when you're free and how you like to study. No more getting paired with someone who wants to chat when you need to grind.
